@@ -1,0 +1,29 @@
+{
+	"name": "bundestag-abstimmungen-db",
+	"version": "0.1",
+	"description": "Eine Datenbank für alle Abstimmungen des Bundestag und dazugehörenden Auswertungen der Daten",
+	"main": "scrape.js",
+	"scripts": {
+		"start": "node scrape"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/ArtInLines/bundestag-abstimmungen-DB.git"
+	},
+	"keywords": [
+		"DB",
+		"parliament",
+		"Bundestag",
+		"webscraping"
+	],
+	"author": "ArtInLines",
+	"license": "MIT",
+	"bugs": {
+		"url": "https://github.com/ArtInLines/bundestag-abstimmungen-DB/issues"
+	},
+	"homepage": "https://github.com/ArtInLines/bundestag-abstimmungen-DB#readme",
+	"dependencies": {
+		"axios": "^0.21.1",
+		"cheerio": "^1.0.0-rc.10"
+	}
+}
