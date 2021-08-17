@@ -79,3 +79,4 @@ typings/
 
 # Additional files to ignore
 .DS_STORE
+data/
