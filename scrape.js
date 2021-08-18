@@ -36,12 +36,12 @@ const path = require('path');
 //
 //
 
-async function main(checkNew = true) {
+async function main(checkNew = false) {
 	const linksFPath = './links.json';
 	let linksMap = new Map();
 	if (checkNew || !fs.existsSync(linksFPath)) {
 		linksMap = await getLinks();
-		fs.writeFileSync(linksFPath, JSON.stringify(Array.from(links.values())));
+		fs.writeFileSync(linksFPath, JSON.stringify(Array.from(linksMap.values())));
 	} else JSON.parse(fs.readFileSync(linksFPath)).forEach((obj) => linksMap.set(obj.link, obj));
 
 	if (!fs.existsSync(process.env.SAVE_FILES_TO_PATH)) fs.mkdirSync(process.env.SAVE_FILES_TO_PATH);
@@ -77,32 +77,41 @@ async function main(checkNew = true) {
 
 /**
  *
- * @param {any[][]} worksheet Excel sheet
+ * @param {any[][]} ws Excel sheet
  * @param {String} fpath Filepath
  * @param {Map<String, {name: String, date: String, text: String, link: String, ftype: String}>} linksMap
  */
 // TODO
-function transformWorksheet(worksheet, fpath, linksMap) {
+function transformWorksheet(ws, fpath, linksMap) {
 	// Wahl:
 	//	0: ja
 	//	1: nein
 	//	2: Enthaltung
 	//	3: ungültig
 	//	4: nichtabgegeben
-	const TITLES = [
-		'Wahlperiode',
-		'Sitzungnr',
-		'Abstimmnr',
-		'Fraktion/Gruppe',
-		'Name',
-		'Vorname',
-		'Titel',
-		['Wahl', 'ja', 'nein', 'Enthaltung', 'ungültig', 'nichtabgegeben'],
-		'Bezeichnung',
-		'Bemerkung',
-	];
+	const TITLES = ['Wahlperiode', 'Sitzungnr', 'Abstimmnr', 'Fraktion/Gruppe', 'Name', 'Vorname', 'Titel', 'ja', 'nein', 'Enthaltung', 'ungültig', 'nichtabgegeben', 'Bezeichnung', 'Bemerkung'].map(
+		(val) => val.toLowerCase()
+	);
 
-	const getVoteNum = (possibilities) => possibilities.reduce((pVal, cVal, i) => pVal + cVal * i);
+	const wsTitle = ws[0];
+	const indicesToIgnore = [];
+	wsTitle.forEach((val, i) => {
+		if (!TITLES.includes(val.toLowerCase())) indicesToIgnore.push(i);
+	});
+
+	/* if (wsTitle.length > 14) {
+		console.log('Title length too long:', fpath);
+		console.log({ wsTitle, indicesToIgnore });
+	} */
+	for (let i = 0; i < ws.length; i++) ws[i] = ws[i].filter((cell, i) => !indicesToIgnore.includes(i));
+	ws.forEach((col, i) => {
+		if (col.length > 14) {
+			console.log('Something is going wrong here...', { fpath, i: i + 1, col });
+		}
+	});
+
+	return ws;
+	/* const getVoteNum = (possibilities) => possibilities.reduce((pVal, cVal, i) => pVal + cVal * i);
 	let voteIndices = [];
 
 	worksheet.unshift().forEach((val, i) => TITLES);
@@ -110,7 +119,7 @@ function transformWorksheet(worksheet, fpath, linksMap) {
 	let titlesMap = new Map();
 	TITLES.forEach((title, i) => {
 		if (Array.isArray(title)) titlesMap.set(i, title);
-	});
+	}); */
 }
 
 /**
