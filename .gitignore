@@ -77,6 +77,8 @@ typings/
 # FuseBox cache
 .fusebox/
 
-# Additional files to ignore
+# Additional files to ignore - usually specifc to this repo
 .DS_STORE
 data/
+all_data.*
+links.json
