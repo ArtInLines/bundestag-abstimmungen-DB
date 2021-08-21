@@ -1,5 +1,5 @@
 {
-	"name": "bundestag-abstimmungen-db",
+	"name": "bundestag-abstimmungen-scraper",
 	"version": "0.3.0",
 	"description": "Eine Datenbank für alle Abstimmungen des Bundestag und dazugehörenden Auswertungen der Daten",
 	"main": "scrape.js",
