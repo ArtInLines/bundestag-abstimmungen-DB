@@ -1,0 +1,28 @@
+{
+	"name": "bundestag-abstimmungen-server",
+	"version": "0.1.0",
+	"description": "",
+	"main": "server.js",
+	"scripts": {
+		"start": "node server.js",
+		"dev": "nodemon server"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/ArtInLines/bundestag-abstimmungen-DB.git"
+	},
+	"author": "ArtInLines",
+	"license": "MIT",
+	"bugs": {
+		"url": "https://github.com/ArtInLines/bundestag-abstimmungen-DB/issues"
+	},
+	"homepage": "https://github.com/ArtInLines/bundestag-abstimmungen-DB#readme",
+	"dependencies": {
+		"dotenv": "^10.0.0",
+		"express": "^4.17.1",
+		"mongoose": "^5.13.7"
+	},
+	"devDependencies": {
+		"nodemon": "^2.0.12"
+	}
+}
