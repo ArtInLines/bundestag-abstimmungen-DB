@@ -1,6 +1,6 @@
 module.exports = {
 	Party: require('./Party'),
 	Session: require('./Session'),
-	User: require('./User'),
+	Person: require('./Person'),
 	Vote: require('./Vote'),
 };
