@@ -33,6 +33,14 @@ const defaultCB = (res, err, docs) => {
 	else sendSuccess(res, docs);
 };
 
+const updateOpts = { new: true };
+
+const defaultUpdate = async ({ req, res, key, val, data = req.body.data, category = getCategory(req), opts = updateOpts }) => {
+	const model = getModel(category);
+	if (model === undefined) return;
+	model.updateOne({ [key]: val }, data, opts, (...args) => defaultCB(res, ...args));
+};
+
 router
 	.get('/:category/:key=:val', async (req, res) => {
 		const { category, key, val } = getURLParams(req.params);
@@ -62,13 +70,8 @@ router
 		if (model === undefined) return;
 		model.create(req.body.data, {}, (...args) => defaultCB(res, ...args));
 	})
-	.put('/:category/:key=:val', async (req, res) => {
-		const { category, key, val } = getURLParams(req.params);
-		const model = getModel(category);
-		if (model === undefined) return;
-		// TODO: Update data in DB - see Model.update() documentation
-	})
-	.put('/:category/:id')
+	.put('/:category/:key=:val', async (req, res) => defaultUpdate({ req, res, key: req.params.key, val: req.params.id }))
+	.put('/:category/:id', async (req, res) => defaultUpdate({ req, res, key: '_id', val: req.params.id }))
 	.delete('/:category/all');
 
 module.exports = router;
