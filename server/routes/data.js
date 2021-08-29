@@ -73,5 +73,7 @@ router
 	.put('/:category/:key=:val', async (req, res) => defaultUpdate({ req, res, key: req.params.key, val: req.params.id }))
 	.put('/:category/:id', async (req, res) => defaultUpdate({ req, res, key: '_id', val: req.params.id }))
 	.delete('/:category/all');
-
+	.delete('/:category/all', async (req, res) => {})
+	.delete('/:category/:id')
+	.delete('/:category/:key=:val');
 module.exports = router;
