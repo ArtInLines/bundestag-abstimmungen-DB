@@ -17,10 +17,10 @@ app.listen(process.env.PORT, async () => {
 	console.log(`Connected to MongoDB on host ${conn.connection.host}`);
 });
 
-process.on('unhandledRejection', (err) => {
+/* process.on('unhandledRejection', (err) => {
 	console.log('Unhandled Error Rejection:', { err });
 	process.exit(1);
-});
+}); */
 mongoose.connection.on('error', (err) => {
 	console.error('Database connection Error', { err });
 	process.exit(1);
