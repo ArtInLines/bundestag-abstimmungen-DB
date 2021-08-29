@@ -109,13 +109,13 @@ router
 		sendSuccess(res, result);
 	})
 	.get('/schema', async (req, res) => {
-		const result = await cbEachModel({ cb: (Model) => Model.schema });
+		const result = await cbEachModel({ cb: (Model) => Model.schemaObj });
 		sendSuccess(res, result);
 	})
 	.get('/:category/schema', async (req, res) => {
 		const obj = Models[req.params.category];
 		if (!obj) sendError(res, noModelErrMsg(req.params.category));
-		sendSuccess(res, obj.schema);
+		sendSuccess(res, obj.schemaObj);
 	})
 	.get('/:category/all', async (req, res) => interactWithDB({ req, res, f: 'find', filter: {} }))
 	.get('/:category/:key=:val', async (req, res) => interactWithDB({ req, res, f: 'findOne' }))

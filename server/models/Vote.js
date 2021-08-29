@@ -7,7 +7,7 @@ const Vote = new mongoose.Schema({
 	party: ObjectID,
 	vote: { type: Number, max: 4 },
 });
-module.exports.schema = Vote;
+module.exports.schemaObj = Vote.obj;
 
 module.exports.model = mongoose.model('voteModel', Vote);
 

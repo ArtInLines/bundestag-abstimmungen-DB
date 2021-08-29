@@ -9,6 +9,6 @@ const Person = new mongoose.Schema({
 	votes: [ObjectID],
 	parties: [ObjectID],
 });
-module.exports.schema = Person;
+module.exports.schemaObj = Person.obj;
 
 module.exports.model = mongoose.model('personModel', Person);
