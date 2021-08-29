@@ -40,17 +40,19 @@ async function main(checkNew = false) {
 	const linksFPath = './links.json';
 	let linksMap = new Map();
 	if (checkNew || !fs.existsSync(linksFPath)) {
+		console.log('Scraping page for new links');
 		linksMap = await getLinks();
-		fs.writeFileSync(linksFPath, JSON.stringify(Array.from(linksMap.values())));
+		fs.writeFileSync(linksFPath, JSON.stringify(Array.from(linksMap.values()), null, '\t'));
 	} else JSON.parse(fs.readFileSync(linksFPath)).forEach((obj) => linksMap.set(obj.link, obj));
 
 	if (!fs.existsSync(process.env.SAVE_FILES_TO_PATH)) fs.mkdirSync(process.env.SAVE_FILES_TO_PATH);
 
 	if (checkNew || fs.readdirSync(process.env.SAVE_FILES_TO_PATH).filter((name) => name.endsWith('.xlsx') || name.endsWith('.xls')).length < linksMap.size) {
-		console.log('Downloading Files');
 		const linksArr = Array.from(linksMap.values());
-		for (let i = 0; i < linksArr.size; i++) {
+		console.log(`Downloading ${linksArr.length} Files`);
+		for (let i = 0; i < linksArr.length; i++) {
 			const obj = linksArr[i];
+			obj.text = obj.text.split(': ').join(' _ ').split('/').join('-');
 			await downloadFile(process.env.BASE_URL + obj.link, process.env.SAVE_FILES_TO_PATH, obj.text, obj.ftype);
 		}
 	}
@@ -129,7 +131,7 @@ function transformWorksheet(ws, fpath, linksMap) {
 async function wait(t) {
 	return new Promise((resolve, reject) =>
 		setTimeout(() => {
-			console.log('Wait over');
+			// console.log('Wait over');
 			resolve();
 		}, t)
 	);
@@ -176,7 +178,7 @@ async function getLinks(url = process.env.BASE_URL + process.env.URL_PATH, start
 			btn = btn.btn;
 		}
 		const elems = await page.$$('td[data-th=Dokument]');
-		console.log(`Found ${elems.length} elements on this page`);
+		// console.log(`Found ${elems.length} elements on this page`);
 		for (let j = 0; j < elems.length; j++) {
 			const el = elems[j];
 			const text = await el.$eval('strong', (text) => text.textContent.trim().split('\n')[0]);
@@ -186,7 +188,7 @@ async function getLinks(url = process.env.BASE_URL + process.env.URL_PATH, start
 			const name = text.split(': ').slice(1).join(': ');
 			links.set(link, { date, name, link, text, ftype });
 		}
-		console.log({ i, linksLen: links.size });
+		// console.log({ i, linksLen: links.size });
 		i++;
 	} while (btn && btnDisabled === 'false');
 	await browser.close();
@@ -230,6 +232,8 @@ async function downloadFile(link, saveTo, name = null, ext = null) {
 		if (saveTo.endsWith('.')) saveTo = saveTo.slice(0, saveTo.length - 1);
 		saveTo += ext;
 	}
+	// console.log({ name, ext, saveTo });
+
 	// Download file
 	const ws = fs.createWriteStream(saveTo);
 	require('https').get(link, (res) => {

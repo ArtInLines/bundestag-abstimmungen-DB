@@ -103,11 +103,30 @@ const cbEachModel = async ({ cb, args = [], errCb = null, errCbArgs = [] }) => {
 	}
 };
 
+const addToArr = (arr, ...toAdd) => {
+	const set = new Set([...arr, ...toAdd]);
+	return Array.from(set.values());
+};
+
+const addToObj = (obj, toAddObj) => {
+	const toAddKeys = Object.keys(toAddObj);
+	toAddKeys.forEach((key) => (obj[key] = toAddObj[key]));
+	return obj;
+};
+
+const addToDoc = (doc, toAdd) => {
+	const keys = Object.keys(doc);
+	for (let i = 0; i < keys.length; i++) {
+		const key = keys[i];
+		if (!toAdd.hasOwnProperty(key)) continue;
+		if (Array.isArray(doc[key])) doc[key] = addToArr(doc[key], ...toAdd[key]);
+		else if (doc[key] instanceof Object) doc[key] = addToObj(doc[key], toAdd[key]);
+		else doc[key] = toAdd[key];
+	}
+	return doc;
+};
+
 router
-	.get('/all', async (req, res) => {
-		const result = await cbEachModel({ cb: (Model) => Model.model.find(), errCb: (err) => sendError(res, err.message) });
-		sendSuccess(res, result);
-	})
 	/* Probably unnecessary routes:
 	.get('/schema', async (req, res) => {
 		const result = await cbEachModel({ cb: (Model) => Model.schemaObj });
@@ -118,15 +137,38 @@ router
 		if (!obj) sendError(res, noModelErrMsg(req.params.category));
 		sendSuccess(res, obj.schemaObj);
 	}) */
+	.get('/all', async (req, res) => {
+		cbEachModel({ cb: (Model) => Model.model.find() })
+			.then((result) => sendSuccess(res, result))
+			.catch((err) => sendError(res, err?.message));
+	})
 	.get('/:category/all', async (req, res) => interactWithDB({ req, res, f: 'find', filter: {} }))
 	.get('/:category/:key=:val', async (req, res) => interactWithDB({ req, res, f: 'findOne' }))
 	.get('/category/:key=:val/all', async (req, res) => interactWithDB({ req, res, f: 'find' }))
 	.get('/:category/:id', async (req, res) => interactWithDB({ req, res, f: 'find', filter: { _id: req.params.id } }))
+
 	.post('/:category', async (req, res) => interactWithDB({ req, res, filter: null, f: 'create', opts: defaultCreateOpts }))
+	.post('/:category/add', async (req, res) => {
+		const model = getModel(req.params.category);
+		if (model === undefined) return sendError(res, noModelErrMsg(category));
+		const doc = await model.findOne(req.body.filter);
+		if (doc === null) model.create(req.body.data, (...args) => defaultCB(res, ...args));
+		else model.updateOne(req.body.filter, addToDoc(doc, req.body.data), (...args) => defaultCB(res, ...args));
+	})
+	.post('/:category/add/all', async (req, res) => {
+		const model = getModel();
+	})
+
 	.put('/:category/all', async (req, res) => interactWithDB({ req, res, f: 'updateMany', filter: {}, opts: defaultUpdateOpts }))
 	.put('/:category/:key=:val', async (req, res) => interactWithDB({ req, res, f: 'updateOne', opts: defaultUpdateOpts }))
 	.put('/:category/:key=:val/all', async (req, res) => interactWithDB({ req, res, f: 'updateMany', opts: defaultUpdateOpts }))
 	.put('/:category/:id', async (req, res) => interactWithDB({ req, res, f: 'updateOne', filter: { _id: req.params.id }, opts: defaultUpdateOpts }))
+
+	.delete('/all', async (req, res) => {
+		cbEachModel({ cb: (Model) => Model.model.deleteMany() })
+			.then((result) => sendSuccess(res, result))
+			.catch((err) => sendError(res, err?.message));
+	})
 	.delete('/:category/all', async (req, res) => interactWithDB({ req, res, filter: {}, f: 'deleteMany', opts: defaultDeleteOpts }))
 	.delete('/:category/:id', async (req, res) => interactWithDB({ req, res, filter: { _id: req.params.id }, f: 'deleteOne', opts: defaultDeleteOpts }))
 	.delete('/:category/:key=:val', async (req, res) => interactWithDB({ req, res, f: 'deleteMany', opts: defaultDeleteOpts }));

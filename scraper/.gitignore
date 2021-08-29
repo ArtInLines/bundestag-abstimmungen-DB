@@ -1,4 +1,5 @@
 .DS_STORE
 data/
+old_data/
 all_data.*
 links.json
