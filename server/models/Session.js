@@ -8,5 +8,6 @@ const Session = new mongoose.Schema({
 	votes: [ObjectID],
 	people: [ObjectID],
 });
+module.exports.schema = Session;
 
 module.exports.model = mongoose.model('sessionModel', Session);
