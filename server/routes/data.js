@@ -91,10 +91,35 @@ const defaultCB = (res, err, docs) => {
 	else sendSuccess(res, docs);
 };
 
+const cbEachModel = async ({ cb, args = [], errCb = null, errCbArgs = [] }) => {
+	try {
+		const keys = Object.keys(Models);
+		const store = {};
+		for (let i = 0; i < keys.length; i++) store[keys[i]] = await cb(Models[keys[i]], ...args);
+		return store;
+	} catch (err) {
+		if (typeof errCb === 'function') return errCb(err, ...errCbArgs);
+		throw err;
+	}
+};
+
 router
+	.get('/all', async (req, res) => {
+		const result = await cbEachModel({ cb: (Model) => Model.model.find(), errCb: (err) => sendError(res, err.message) });
+		sendSuccess(res, result);
+	})
+	.get('/schema', async (req, res) => {
+		const result = await cbEachModel({ cb: (Model) => Model.schema });
+		sendSuccess(res, result);
+	})
+	.get('/:category/schema', async (req, res) => {
+		const obj = Models[req.params.category];
+		if (!obj) sendError(res, noModelErrMsg(req.params.category));
+		sendSuccess(res, obj.schema);
+	})
+	.get('/:category/all', async (req, res) => interactWithDB({ req, res, f: 'find', filter: {} }))
 	.get('/:category/:key=:val', async (req, res) => interactWithDB({ req, res, f: 'findOne' }))
 	.get('/category/:key=:val/all', async (req, res) => interactWithDB({ req, res, f: 'find' }))
-	.get('/:category/all', async (req, res) => interactWithDB({ req, res, f: 'find', filter: {} }))
 	.get('/:category/:id', async (req, res) => interactWithDB({ req, res, f: 'find', filter: { _id: req.params.id } }))
 	.post('/:category', async (req, res) => interactWithDB({ req, res, filter: null, f: 'create', opts: defaultCreateOpts }))
 	.put('/:category/all', async (req, res) => interactWithDB({ req, res, f: 'updateMany', filter: {}, opts: defaultUpdateOpts }))
