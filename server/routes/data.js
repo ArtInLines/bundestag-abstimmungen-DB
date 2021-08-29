@@ -108,6 +108,7 @@ router
 		const result = await cbEachModel({ cb: (Model) => Model.model.find(), errCb: (err) => sendError(res, err.message) });
 		sendSuccess(res, result);
 	})
+	/* Probably unnecessary routes:
 	.get('/schema', async (req, res) => {
 		const result = await cbEachModel({ cb: (Model) => Model.schemaObj });
 		sendSuccess(res, result);
@@ -116,7 +117,7 @@ router
 		const obj = Models[req.params.category];
 		if (!obj) sendError(res, noModelErrMsg(req.params.category));
 		sendSuccess(res, obj.schemaObj);
-	})
+	}) */
 	.get('/:category/all', async (req, res) => interactWithDB({ req, res, f: 'find', filter: {} }))
 	.get('/:category/:key=:val', async (req, res) => interactWithDB({ req, res, f: 'findOne' }))
 	.get('/category/:key=:val/all', async (req, res) => interactWithDB({ req, res, f: 'find' }))
