@@ -1,0 +1,69 @@
+# TODO:
+# HOW TO RECORD PARTY MEMBER CHANGES ???
+
+
+
+One DB for each parliament.
+
+
+Each DB should have the following TABLES:
+    - Parties
+    - MoPs / People (TODO: DECIDE NAME!)
+    - Sessions
+    - Votes
+
+
+Parties (
+    party_id: INTEGER NOT NULL PRIMARY KEY,
+    name: TEXT NOT NULL UNIQUE,
+    # TODO: Additional information ???
+)
+
+People (
+    person_id: INTEGER NOT NULL PRIMARY KEY,
+    firstname: TEXT, # TODO: unnecessary ???
+    lastname: TEXT, # TODO: unnecessary ???
+    title: TEXT, # TODO: unnecessary ???
+    fullname: TEXT,
+    party_id: INTEGER,
+    
+    FOREIGN KEY (party_id)
+        REFERENCES Parties(party_id)
+            ON UPDATE CASCADE
+            ON DELETE SET NULL
+)
+
+Sessions (
+    session_id: INTEGER NOT NULL PRIMARY KEY,
+    date: NOT NULL, # TODO: Decide format to store date in
+    topic_name: TEXT NOT NULL,
+    # TODO: Decide whether to add additional data, maybe only for specific Databases...
+)
+
+Votes (
+    vote_id: INTEGER NOT NULL PRIMARY KEY,
+    person_id: INTEGER NOT NULL,
+    party_id: INTEGER NOT NULL, # As a possible way to record party member changes without additional tables...
+    session_id: INTEGER NOT NULL,
+    val: INTEGER NOT NULL (stores vote as an enumerable) # TODO: Decide what to call this property ('val', 'vote', etc.)
+        # 0 - Yes
+        # 1 - No
+        # 2 - Abstention
+        # 3 - Invalid vote
+        # 4 - Vote not submitted
+    
+    FOREIGN KEY (person_id)
+        REFERENCES People(person_id)
+            ON UPDATE CASCADE
+            ON DELETE CASCADE;
+    
+    FOREIGN KEY (session_id)
+        REFERENCES Sessions(session_id)
+            ON UPDATE CASCADE
+            ON DELETE CASCADE;
+    
+    FOREIGN KEY (party_id)
+        REFERENCES Parties(party_id)
+            ON UPDATE CASCADE
+            ON DELETE SET NULL;
+)
