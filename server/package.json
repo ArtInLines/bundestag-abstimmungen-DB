@@ -3,6 +3,10 @@
 	"version": "0.1.0",
 	"description": "",
 	"main": "server.js",
+	"engines": {
+		"node": "14.15.x",
+		"npm": "7.5.x"
+	},
 	"scripts": {
 		"start": "node server.js",
 		"dev": "nodemon server"
@@ -18,6 +22,7 @@
 	},
 	"homepage": "https://github.com/ArtInLines/bundestag-abstimmungen-DB#readme",
 	"dependencies": {
+		"better-sqlite3": "^7.4.3",
 		"dotenv": "^10.0.0",
 		"express": "^4.17.1",
 		"mongoose": "^5.13.7"
