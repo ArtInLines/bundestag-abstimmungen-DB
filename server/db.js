@@ -1,5 +1,6 @@
-const Database = require('better-sqlite3');
+const Database = require('sqlite3-js');
 const path = require('path');
+const SQLiteDB = require('sqlite3-js/docs/lib/SQLiteDB');
 
 function getDBPath(name) {
 	const nameExt = path.extname(name);
@@ -7,14 +8,18 @@ function getDBPath(name) {
 	return path.resolve(__dirname, 'db', name);
 }
 
-/**
- * @typedef {Object<String, Database>} DataBases
- */
-const DataBases = {};
+const DB_OPTS = {};
 
-['de', 'uk', 'us'].forEach((str) => (DataBases[str] = new Database(getDBPath(str))));
+/**
+ * @typedef {Object.<String, SQLiteDB>} DataBases
+ */
+const DataBases = {
+	de: new Database('de', DB_OPTS),
+};
+
+['de', 'uk', 'us'].forEach((str) => (DataBases[str] = new Database(getDBPath(str), DB_OPTS)));
 
 // For Testing
-console.log('Foreign Keys in DB "de":', DataBases['de'].pragma('foreign_keys', { simple: true }));
+console.log('Foreign Keys in DB "de":', DataBases['uk']);
 
 module.exports = DataBases;
