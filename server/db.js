@@ -13,13 +13,19 @@ const DB_OPTS = {};
 /**
  * @typedef {Object.<String, SQLiteDB>} DataBases
  */
-const DataBases = {
-	de: new Database('de', DB_OPTS),
-};
-
+const DataBases = {};
 ['de', 'uk', 'us'].forEach((str) => (DataBases[str] = new Database(getDBPath(str), DB_OPTS)));
 
 // For Testing
-console.log('Foreign Keys in DB "de":', DataBases['uk']);
+console.log(DataBases['uk']);
 
-module.exports = DataBases;
+/**
+ * Get the specified DB to run queries on it.
+ * @param {String} key Name of the DB. Should be the two-letter code of a country (e.g. 'de' for germany, 'uk' for the UK, etc.)
+ * @returns {(SQLiteDB | undefined)} Returns a Database instance or `undefined` if no database with the name `key` could be found.
+ */
+function getDB(key) {
+	return DataBases[key];
+}
+
+module.exports.getDB = getDB;
