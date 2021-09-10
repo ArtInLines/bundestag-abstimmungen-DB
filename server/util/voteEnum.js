@@ -1,16 +1,3 @@
-const mongoose = require('mongoose');
-const ObjectID = mongoose.Schema.Types.ObjectId;
-
-const Vote = new mongoose.Schema({
-	session: ObjectID,
-	person: ObjectID,
-	party: ObjectID,
-	vote: { type: Number, max: 4 },
-});
-module.exports.schemaObj = Vote.obj;
-
-module.exports.model = mongoose.model('voteModel', Vote);
-
 /** @param {[String]} voteEnum Array of of possible vote strings. The corresponding index indicates the enumerated number */
 const voteEnum = ['ja', 'nein', 'Enthaltung', 'ungültig', 'nichtabgegeben'];
 module.exports.voteEnum = voteEnum;
