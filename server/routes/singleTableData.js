@@ -1,30 +1,49 @@
 const express = require('express');
 const router = express.Router();
-const databases = require('../db');
-const DB = require('better-sqlite3');
+const { getDB } = require('../db');
+const { sendError, sendSuccess } = require('./helper');
 
-const defaultCB = (res, err, data) => {
-	if (err) sendError(res, err);
-	else sendSuccess(res, data);
-};
+// Data for PUT or POST requests needs to be sent in the following format:
+// { data: {
+// 		cols: String[],
+// 		vals: any[],
+// 	}}
+// Alternatively, data can also be sent like this:
+// { data: [
+// 		cols: String[],
+// 		...vals: any[]
+// 	]}
 
-function getSchema(db, table) {}
+// PUT methods do not ever insert any new data into the DB.
+// By default, POST methods use the REPLACE method,
+// potentially overriding existing data in the DB instead of just inserting new data.
+// To change this behaviour, add `"noReplacement" = true` to the request body.
 
-function selectStmt({ cols = '*', table = '' }) {
-	if (!cols) cols = ['*'];
-	if (typeof cols === 'string') cols = [cols];
-	cols = cols.reduce((prev, current) => {
-		if (Array.isArray(current)) current = current[0] + ' AS ' + current[1];
-		return prev + ', ' + current;
+router
+	.route('/')
+	.get((req, res, next) => {
+		const db = getDB(res.locals.db);
+		const rows = db.select(res.locals.table).all();
+		sendSuccess(res, rows, 200);
+	})
+	.post((req, res, next) => {
+		const db = getDB(res.locals.db);
+		const data = req.body.data;
+		let method = 'replace';
+		if (req.body.noReplacement) method = 'insert';
+		const result = db[method](res.locals.table, data.cols, ...data.vals);
+		sendSuccess(res, result, 201);
+	})
+	.put((req, res, next) => {
+		const db = getDB(res.locals.db);
+		const result = db.update(res.locals.table, req.body.data);
+		sendSuccess(res, result, 200);
+	})
+	.delete((req, res, next) => {
+		const db = getDB(res.locals.db);
+		const result = db.delete({ table: res.locals.table });
+		sendSuccess(res, result, 200); // TODO: Change to status code for DELETE operation
 	});
-
-	return `SELECT ${cols} FROM ${table}`;
-}
-
-router.route('/').get((req, res, next) => {
-	const db = new DB(); // res.locals.db;
-	db.prepare('');
-});
 
 router.route('/schema').get((req, res, next) => {});
 
