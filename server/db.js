@@ -14,7 +14,6 @@ const DB_OPTS = {};
  * @typedef {Object.<String, SQLiteDB>} DataBases
  */
 const DataBases = {};
-['de', 'uk', 'us'].forEach((str) => (DataBases[str] = new Database(getDBPath(str), DB_OPTS)));
 
 // For Testing
 console.log(DataBases['uk']);
@@ -29,3 +28,13 @@ function getDB(key) {
 }
 
 module.exports.getDB = getDB;
+
+/**
+ *
+ * @param  {...any} dbNames Names of DB
+ */
+module.exports.init = (...dbNames) => {
+	if (dbNames.values === 1 && Array.isArray(dbNames)) dbNames = dbNames[0];
+	dbNames.forEach((str) => (DataBases[str] = new Database(getDBPath(str), DB_OPTS)));
+	return DataBases;
+};
