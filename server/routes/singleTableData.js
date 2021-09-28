@@ -74,6 +74,7 @@ router
 		sendSuccess(res, result, 200);
 	});
 
+module.exports = router;
 //
 //
 /// OLD CODE

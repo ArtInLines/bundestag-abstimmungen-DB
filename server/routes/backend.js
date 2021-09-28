@@ -3,7 +3,7 @@ const router = express.Router();
 const { getDB } = require('../db');
 const singleTableRouter = require('./singleTableData');
 
-const dbPaths = ['/:db', '/:db/:table'];
+const dbPaths = ['/:db/:table', '/:db'];
 
 // TODO: Add authorization middle for PUT, POST & DELETE methods
 
@@ -11,11 +11,12 @@ const dbPaths = ['/:db', '/:db/:table'];
 router.use(dbPaths, (req, res, next) => {
 	res.locals.db = req.params.db;
 	if (/^\[.*\]$/.test(req.params?.table)) res.locals.table = JSON.parse(req.params.table);
-	else res.locals.table = req.params?.table;
+	else res.locals.table = req.params.table;
 	if (getDB(res.locals.db) === undefined) {
 		res.status(404);
 		next(new Error(`No Database with the name "${req.params.db}" could be found.`));
 	}
+	console.log('\n\n', res.locals, '\n\n');
 	next();
 });
 

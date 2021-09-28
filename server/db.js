@@ -1,11 +1,12 @@
 const Database = require('sqlite3-js');
 const path = require('path');
-const SQLiteDB = require('sqlite3-js/docs/lib/SQLiteDB');
+const fs = require('fs');
 
-function getDBPath(name) {
+function getDBPath(name, dir = path.resolve(__dirname, 'db')) {
 	const nameExt = path.extname(name);
 	if (nameExt !== '.db' && nameExt !== '.dat' && nameExt !== '.sqlite') name += '.db';
-	return path.resolve(__dirname, 'db', name);
+	if (!fs.existsSync(dir)) fs.mkdirSync(dir);
+	return path.resolve(dir, name);
 }
 
 const DB_OPTS = {};
@@ -16,7 +17,7 @@ const DB_OPTS = {};
 const DataBases = {};
 
 // For Testing
-console.log(DataBases['uk']);
+// console.log(DataBases['uk']);
 
 /**
  * Get the specified DB to run queries on it.
@@ -31,7 +32,7 @@ module.exports.getDB = getDB;
 
 /**
  *
- * @param  {...any} dbNames Names of DB
+ * @param  {...String} dbNames Names of DB
  */
 module.exports.init = (...dbNames) => {
 	if (dbNames.values === 1 && Array.isArray(dbNames)) dbNames = dbNames[0];

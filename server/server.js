@@ -11,7 +11,7 @@ app.use('/api/v1', require('./routes/backend'));
 app.use(...require('./middleware/errHandler'));
 
 // Set up DB
-require('./db').init(process.env.DATABASES.split(','));
+require('./db').init(...process.env.DATABASES.split(','));
 
 // Start up server & connect to DB
 app.listen(process.env.PORT, async () => {
