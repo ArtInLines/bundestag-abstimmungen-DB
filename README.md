@@ -13,13 +13,15 @@ Es gibt 2 Ideen, diese Daten zu nutzen
 
 Für eine Netzwerkanalyse, könnte untersucht werden, wie oft spezielle Personen gleich abgestimmt haben. Weiter könnte auch eine relative Angabe über die Ähnlichkeit der Abstimmungsverhlaten unterschiedlicher Parteien gemacht werden.
 
-Für eine solche Netzwerkanalyse, wäre eine "Edgelist" / "Adjacency-Node-List" sinnvoll. Eine solche EdgeList das folgende Format annehmen:
+Für eine solche Netzwerkanalyse, wäre eine "Edgelist" / "Adjacency-Node-List" sinnvoll. Eine solche EdgeList würde das folgende Format annehmen:
 
 ```CSV
 Abgeordnete(r)1, Abgeordnete(r)2, n=Anzahl der Übereinstimmenden Wahlen
 Abgeordnete(r)1, Abgeordnete(r)3, n=Anzahl der Übereinstimmenden Wahlen
 Abgeordnete(r)2, Abgeordnete(r)3, n=Anzahl der Übereinstimmenden Wahlen
-...
+.
+.
+.
 ```
 
 ## Datenbank + Nutzerinterface
